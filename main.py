@@ -3,6 +3,7 @@ CMPS 2200  Recitation 1
 """
 
 ### the only imports needed are here
+from numpy import sort
 import tabulate
 import time
 ###
@@ -20,6 +21,18 @@ def binary_search(mylist, key):
 	return _binary_search(mylist, key, 0, len(mylist)-1)
 
 def _binary_search(mylist, key, left, right):
+	if left <= right:
+		middle = left + (right - left) // 2
+		if mylist[middle] == key:
+			return middle
+		elif mylist[middle] < key:
+			return _binary_search(mylist, key, middle + 1, right)
+		else:
+			return _binary_search(mylist, key, left, middle - 1)
+	else:
+		return -1
+
+	
 	"""
 	Recursive implementation of binary search.
 
@@ -40,6 +53,12 @@ def _binary_search(mylist, key, left, right):
 
 
 def time_search(search_fn, mylist, key):
+	start = time.time() * 1000 
+	search_fn(mylist, key)
+	end = time.time() * 1000
+	totalTime = start - end 
+	return totalTime		
+
 	"""
 	Return the number of milliseconds to run this
 	search function on this list.
@@ -62,6 +81,16 @@ def time_search(search_fn, mylist, key):
 	###
 
 def compare_search(sizes=[1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7]):
+	key = -1 
+	results = []
+	for x in sizes:
+		n = int(x)
+		mylist = list(range(n)) 
+		linear_search_time = time_search(linear_search, mylist, key)
+		binary_search_time = time_search(binary_search, mylist, key)
+		results.append((n, linear_search_time, binary_search_time))
+
+	return results
 	"""
 	Compare the running time of linear_search and binary_search
 	for input sizes as given. The key for each search should be
@@ -86,4 +115,5 @@ def print_results(results):
 							headers=['n', 'linear', 'binary'],
 							floatfmt=".3f",
 							tablefmt="github"))
-
+results = compare_search()
+print_results(results)
